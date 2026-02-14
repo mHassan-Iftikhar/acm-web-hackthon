@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyAuth } from '../../middleware/auth';
+import { verifyFirebaseToken as verifyAuth } from '../../middleware/auth.js';
 import { competitionController, categoryController } from './competition.controller';
 
 const router = express.Router();

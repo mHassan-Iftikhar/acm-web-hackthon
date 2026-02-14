@@ -1,15 +1,19 @@
 import express, { Request, Response, NextFunction } from 'express';
+import { createServer } from 'http';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import connectDB from './config/database';
-import './config/firebase-admin'; // Initialize Firebase Admin
-import authRoutes from './features/auth/auth.routes';
-import competitionRoutes from './features/competitions/competition.routes';
-import { errorHandler } from './middleware/errorHandler';
+import connectDB from './config/database.js';
+import './config/firebase-admin.js'; // Initialize Firebase Admin
+import authRoutes from './features/auth/auth.routes.js';
+import chatRoutes from './features/chat/chat.routes.js';
+import competitionRoutes from './features/competitions/competition.routes.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { initSocket } from './services/socket.service.js';
 
 dotenv.config();
 
 const app = express();
+const httpServer = createServer(app);
 
 // Middleware
 app.use(cors());
@@ -31,6 +35,9 @@ app.get('/api/health', (req: Request, res: Response) => {
 // Auth Routes
 app.use('/api/auth', authRoutes);
 
+// Chat Routes
+app.use('/api/chat', chatRoutes);
+
 // Competition Routes
 app.use('/api', competitionRoutes);
 
@@ -45,9 +52,12 @@ app.use((req: Request, res: Response) => {
   });
 });
 
+// Initialize Socket.io
+initSocket(httpServer);
+
 // Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
 
