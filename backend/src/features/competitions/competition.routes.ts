@@ -1,13 +1,22 @@
-import express from 'express';
-import { verifyFirebaseToken as verifyAuth } from '../../middleware/auth.js';
-import { competitionController, categoryController } from './competition.controller';
-import { registrationController } from './registration.controller';
+import express from "express";
+import { verifyFirebaseToken as verifyAuth } from "../../middleware/auth.js";
+import {
+  competitionController,
+  categoryController,
+} from "./competition.controller.js";
+import { registrationController } from "./registration.controller.js";
 
 const router = express.Router();
 
 // Competition Routes
 router.post("/competitions", verifyAuth, competitionController.create);
 router.get("/competitions", competitionController.getAll);
+// Discovery Routes
+router.get("/competitions/trending", competitionController.getTrending);
+router.get("/competitions/popular", competitionController.getPopular);
+router.get("/competitions/new", competitionController.getNew);
+router.get("/competitions/upcoming", competitionController.getUpcoming);
+
 router.get("/competitions/:id", competitionController.getById);
 router.patch("/competitions/:id", verifyAuth, competitionController.update);
 router.delete("/competitions/:id", verifyAuth, competitionController.delete);

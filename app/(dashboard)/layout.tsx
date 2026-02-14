@@ -1,23 +1,19 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/use-auth';
-import Navbar from '@/components/navbar';
-import { ReactNode } from 'react';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
+import { Navbar } from "@/components/navbar";
+import { ReactNode } from "react";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { user, loading } = useAuth();
 
   useEffect(() => {
     // Redirect to login if not authenticated
     if (!loading && !user) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [user, loading, router]);
 
@@ -38,9 +34,7 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <Navbar />
-      <main className="container mx-auto py-8 px-4">
-        {children}
-      </main>
+      <main className="container mx-auto py-8 px-4">{children}</main>
     </div>
   );
 }

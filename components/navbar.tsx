@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function Navbar() {
+export function Navbar() {
   const router = useRouter();
   const { user, logout } = useAuth();
 
@@ -29,7 +29,10 @@ export default function Navbar() {
     <nav className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <h1 className="text-2xl font-bold text-blue-600">Taakra</h1>
+          <h1 className="text-2xl font-bold text-blue-600 font-orenza tracking-wide flex items-center">
+            Taakra
+            <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-1.5 ml-0.5" />
+          </h1>
           <div className="hidden md:flex gap-6">
             <a
               href="/dashboard"
@@ -43,8 +46,20 @@ export default function Navbar() {
             >
               Browse
             </a>
+            <a
+              href="/discover"
+              className="text-slate-600 hover:text-slate-900 font-medium transition"
+            >
+              Discover
+            </a>
             {user && (user.role === "organizer" || user.role === "admin") && (
               <>
+                <a
+                  href="/admin"
+                  className="text-slate-600 hover:text-slate-900 font-medium transition"
+                >
+                  Admin
+                </a>
                 <a
                   href="/admin/competitions"
                   className="text-slate-600 hover:text-slate-900 font-medium transition"
@@ -56,6 +71,18 @@ export default function Navbar() {
                   className="text-slate-600 hover:text-slate-900 font-medium transition"
                 >
                   Registrations
+                </a>
+                <a
+                  href="/admin/analytics"
+                  className="text-slate-600 hover:text-slate-900 font-medium transition"
+                >
+                  Analytics
+                </a>
+                <a
+                  href="/admin/support"
+                  className="text-slate-600 hover:text-slate-900 font-medium transition"
+                >
+                  Support
                 </a>
               </>
             )}

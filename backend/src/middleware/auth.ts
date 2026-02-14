@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { auth } from "../config/firebase-admin";
+import { auth } from "../config/firebase-admin.js";
 
-import User, { IUser } from "../models/User";
+import User, { IUser } from "../models/User.js";
 
 // Extend Express Request to include user data
 declare global {
