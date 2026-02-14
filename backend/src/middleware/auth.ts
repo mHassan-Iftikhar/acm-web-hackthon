@@ -1,5 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { auth } from '../config/firebase-admin';
+import { Request, Response, NextFunction } from "express";
+import { auth } from "../config/firebase-admin";
+
+import User, { IUser } from "../models/User";
 
 // Extend Express Request to include user data
 declare global {
@@ -9,6 +11,8 @@ declare global {
         uid: string;
         email: string;
         emailVerified: boolean;
+        id?: string; // MongoDB User ID
+        role?: string;
       };
     }
   }
@@ -17,16 +21,16 @@ declare global {
 export const verifyFirebaseToken = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     // Get token from Authorization header
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
-        status: 'error',
-        message: 'No authorization token provided',
+        status: "error",
+        message: "No authorization token provided",
       });
     }
 
@@ -38,57 +42,90 @@ export const verifyFirebaseToken = async (
     // Attach user info to request
     req.user = {
       uid: decodedToken.uid,
-      email: decodedToken.email || '',
+      email: decodedToken.email || "",
       emailVerified: decodedToken.email_verified || false,
     };
 
     next();
   } catch (error: any) {
-    console.error('Token verification error:', error.message);
+    console.error("Token verification error:", error.message);
 
-    if (error.code === 'auth/id-token-expired') {
+    if (error.code === "auth/id-token-expired") {
       return res.status(401).json({
-        status: 'error',
-        message: 'Token expired',
-        code: 'TOKEN_EXPIRED',
+        status: "error",
+        message: "Token expired",
+        code: "TOKEN_EXPIRED",
       });
     }
 
-    if (error.code === 'auth/invalid-id-token') {
+    if (error.code === "auth/invalid-id-token") {
       return res.status(401).json({
-        status: 'error',
-        message: 'Invalid token',
-        code: 'INVALID_TOKEN',
+        status: "error",
+        message: "Invalid token",
+        code: "INVALID_TOKEN",
       });
     }
 
     res.status(401).json({
-      status: 'error',
-      message: 'Authentication failed',
-      code: 'AUTH_FAILED',
+      status: "error",
+      message: "Authentication failed",
+      code: "AUTH_FAILED",
     });
   }
 };
 
-// Optional: Role-based authorization middleware (for later sprints)
-export const requireRole = (allowedRoles: string[]) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+/**
+ * Middleware to verify Firebase token AND attach MongoDB User document
+ */
+export const verifyAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  await verifyFirebaseToken(req, res, async () => {
     try {
-      if (!req.user) {
-        return res.status(401).json({
-          status: 'error',
-          message: 'User not authenticated',
+      if (!req.user) return; // verifyFirebaseToken would have already sent response
+
+      const dbUser = await User.findOne({ firebaseUID: req.user.uid });
+
+      if (!dbUser) {
+        return res.status(404).json({
+          status: "error",
+          message:
+            "User record not found in database. Please complete registration.",
         });
       }
 
-      // TODO: Fetch user role from database in future sprints
-      // For now, just proceed
+      req.user.id = dbUser._id.toString();
+      req.user.role = dbUser.role;
+
       next();
     } catch (error) {
-      res.status(403).json({
-        status: 'error',
-        message: 'Authorization failed',
+      res.status(500).json({
+        status: "error",
+        message: "Internal server error during authentication",
       });
     }
+  });
+};
+
+// Optional: Role-based authorization middleware
+export const requireRole = (allowedRoles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user || !req.user.role) {
+      return res.status(401).json({
+        status: "error",
+        message: "User not authenticated",
+      });
+    }
+
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        status: "error",
+        message: "You do not have permission to perform this action",
+      });
+    }
+
+    next();
   };
 };
