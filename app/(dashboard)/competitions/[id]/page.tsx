@@ -1,15 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { competitionApi } from '@/lib/competition-api';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { format } from 'date-fns';
-import { Calendar, MapPin, Users, DollarSign, Clock } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { competitionApi } from "@/lib/competition-api";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
+import { Calendar, MapPin, Users, DollarSign, Clock } from "lucide-react";
+import { toast } from "sonner";
+import { RegistrationModal } from "@/components/competitions/registration-modal";
 
 export default function CompetitionDetailPage() {
   const params = useParams();
@@ -24,7 +31,7 @@ export default function CompetitionDetailPage() {
         const data = await competitionApi.getCompetition(competitionId);
         setCompetition(data);
       } catch (error) {
-        toast.error('Failed to load competition');
+        toast.error("Failed to load competition");
       } finally {
         setIsLoading(false);
       }
@@ -54,30 +61,36 @@ export default function CompetitionDetailPage() {
   }
 
   const statusColor = {
-    draft: 'bg-gray-100 text-gray-800',
-    registration_open: 'bg-green-100 text-green-800',
-    registration_closed: 'bg-yellow-100 text-yellow-800',
-    ongoing: 'bg-blue-100 text-blue-800',
-    completed: 'bg-gray-100 text-gray-800',
-    cancelled: 'bg-red-100 text-red-800',
+    draft: "bg-gray-100 text-gray-800",
+    registration_open: "bg-green-100 text-green-800",
+    registration_closed: "bg-yellow-100 text-yellow-800",
+    ongoing: "bg-blue-100 text-blue-800",
+    completed: "bg-gray-100 text-gray-800",
+    cancelled: "bg-red-100 text-red-800",
   };
 
   const statusLabel = {
-    draft: 'Draft',
-    registration_open: 'Registration Open',
-    registration_closed: 'Registration Closed',
-    ongoing: 'Ongoing',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
+    draft: "Draft",
+    registration_open: "Registration Open",
+    registration_closed: "Registration Closed",
+    ongoing: "Ongoing",
+    completed: "Completed",
+    cancelled: "Cancelled",
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
-          <h1 className="text-4xl font-bold tracking-tight mb-2">{competition.title}</h1>
+          <h1 className="text-4xl font-bold tracking-tight mb-2">
+            {competition.title}
+          </h1>
           <div className="flex items-center gap-4 flex-wrap">
-            <Badge className={statusColor[competition.status as keyof typeof statusColor]}>
+            <Badge
+              className={
+                statusColor[competition.status as keyof typeof statusColor]
+              }
+            >
               {statusLabel[competition.status as keyof typeof statusLabel]}
             </Badge>
             <span className="text-lg text-gray-600">
@@ -95,7 +108,9 @@ export default function CompetitionDetailPage() {
               <CardTitle>About</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-700 whitespace-pre-wrap">{competition.description}</p>
+              <p className="text-gray-700 whitespace-pre-wrap">
+                {competition.description}
+              </p>
             </CardContent>
           </Card>
 
@@ -106,7 +121,9 @@ export default function CompetitionDetailPage() {
                 <CardTitle>Rules & Guidelines</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-700 whitespace-pre-wrap">{competition.rules}</p>
+                <p className="text-gray-700 whitespace-pre-wrap">
+                  {competition.rules}
+                </p>
               </CardContent>
             </Card>
           )}
@@ -118,7 +135,9 @@ export default function CompetitionDetailPage() {
                 <CardTitle>Prizes</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-700 whitespace-pre-wrap">{competition.prizes}</p>
+                <p className="text-gray-700 whitespace-pre-wrap">
+                  {competition.prizes}
+                </p>
               </CardContent>
             </Card>
           )}
@@ -138,7 +157,10 @@ export default function CompetitionDetailPage() {
                   <span className="text-sm font-medium">Start Date</span>
                 </div>
                 <p className="text-sm font-semibold">
-                  {format(new Date(competition.startDate), 'MMM dd, yyyy HH:mm')}
+                  {format(
+                    new Date(competition.startDate),
+                    "MMM dd, yyyy HH:mm",
+                  )}
                 </p>
               </div>
 
@@ -148,17 +170,22 @@ export default function CompetitionDetailPage() {
                   <span className="text-sm font-medium">End Date</span>
                 </div>
                 <p className="text-sm font-semibold">
-                  {format(new Date(competition.endDate), 'MMM dd, yyyy HH:mm')}
+                  {format(new Date(competition.endDate), "MMM dd, yyyy HH:mm")}
                 </p>
               </div>
 
               <div>
                 <div className="flex items-center gap-2 text-gray-600 mb-1">
                   <Clock className="h-4 w-4" />
-                  <span className="text-sm font-medium">Registration Deadline</span>
+                  <span className="text-sm font-medium">
+                    Registration Deadline
+                  </span>
                 </div>
                 <p className="text-sm font-semibold">
-                  {format(new Date(competition.registrationDeadline), 'MMM dd, yyyy HH:mm')}
+                  {format(
+                    new Date(competition.registrationDeadline),
+                    "MMM dd, yyyy HH:mm",
+                  )}
                 </p>
               </div>
 
@@ -196,22 +223,33 @@ export default function CompetitionDetailPage() {
                     <DollarSign className="h-4 w-4" />
                     <span className="text-sm font-medium">Entry Fee</span>
                   </div>
-                  <p className="text-sm font-semibold">₹{competition.entryFee}</p>
+                  <p className="text-sm font-semibold">
+                    ₹{competition.entryFee}
+                  </p>
                 </div>
               )}
             </CardContent>
           </Card>
 
           {/* Register Button */}
-          {competition.status === 'registration_open' && (
-            <Button className="w-full" size="lg">
-              Register Now
-            </Button>
+          {competition.status === "registration_open" && (
+            <RegistrationModal
+              competitionId={competitionId}
+              competitionTitle={competition.title}
+              onSuccess={() => {
+                // Refresh competition data to update registration count
+                competitionApi
+                  .getCompetition(competitionId)
+                  .then(setCompetition);
+              }}
+            />
           )}
 
-          {competition.status !== 'registration_open' && (
+          {competition.status !== "registration_open" && (
             <Button disabled className="w-full" size="lg">
-              {competition.status === 'registration_closed' ? 'Registration Closed' : 'Not Available'}
+              {competition.status === "registration_closed"
+                ? "Registration Closed"
+                : "Not Available"}
             </Button>
           )}
 
@@ -222,8 +260,12 @@ export default function CompetitionDetailPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <p className="font-semibold">{competition.organizer?.name || 'N/A'}</p>
-                <p className="text-sm text-gray-600">{competition.organizer?.email || 'N/A'}</p>
+                <p className="font-semibold">
+                  {competition.organizer?.name || "N/A"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {competition.organizer?.email || "N/A"}
+                </p>
               </div>
             </CardContent>
           </Card>

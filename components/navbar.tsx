@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/use-auth';
-import { Button } from '@/components/ui/button';
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
   const router = useRouter();
@@ -19,9 +19,9 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await logout();
-      router.push('/login');
+      router.push("/login");
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   };
 
@@ -43,13 +43,21 @@ export default function Navbar() {
             >
               Browse
             </a>
-            {user && (user.role === 'organizer' || user.role === 'admin') && (
-              <a
-                href="/admin/competitions"
-                className="text-slate-600 hover:text-slate-900 font-medium transition"
-              >
-                Manage
-              </a>
+            {user && (user.role === "organizer" || user.role === "admin") && (
+              <>
+                <a
+                  href="/admin/competitions"
+                  className="text-slate-600 hover:text-slate-900 font-medium transition"
+                >
+                  Manage
+                </a>
+                <a
+                  href="/admin/registrations"
+                  className="text-slate-600 hover:text-slate-900 font-medium transition"
+                >
+                  Registrations
+                </a>
+              </>
             )}
           </div>
         </div>
@@ -60,22 +68,22 @@ export default function Navbar() {
               <Button variant="ghost" className="gap-2">
                 <div className="text-right">
                   <p className="text-sm font-medium text-slate-900">
-                    {user?.displayName || user?.email?.split('@')[0] || 'User'}
+                    {user?.displayName || user?.email?.split("@")[0] || "User"}
                   </p>
                   <p className="text-xs text-slate-500">{user?.email}</p>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                  {(user?.email?.[0] || 'U').toUpperCase()}
+                  {(user?.email?.[0] || "U").toUpperCase()}
                 </div>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+              <DropdownMenuItem onClick={() => router.push("/dashboard")}>
                 Dashboard
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+              <DropdownMenuItem onClick={() => router.push("/dashboard")}>
                 Profile Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
