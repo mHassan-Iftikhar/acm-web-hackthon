@@ -1,7 +1,10 @@
 {
-  "build": {
-    "installCommand": "npm install",
-    "buildCommand": "npm run build",
-    "outputDirectory": ".next"
-  }
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node",
+      "installCommand": "npm install --some-flag"
+    }
+  ]
 }
