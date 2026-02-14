@@ -3,7 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MapPin, Calendar, Clock } from "lucide-react";
+import {
+  ArrowRight,
+  MapPin,
+  Calendar,
+  Clock,
+  Trophy,
+  Target,
+} from "lucide-react";
 import { events } from "@/lib/data/events";
 
 interface UpcomingEventsProps {
@@ -20,7 +27,7 @@ export const UpcomingEvents = ({ limit = 3 }: UpcomingEventsProps) => {
           Upcoming <span className="text-blue-600">Events</span>
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayedEvents.map((event) => (
             <Link
               key={event.slug}
@@ -63,6 +70,37 @@ export const UpcomingEvents = ({ limit = 3 }: UpcomingEventsProps) => {
               </div>
             </Link>
           ))}
+        </div> */}
+
+        {/* UCP Taakra 2026 Card */}
+        <div className="w-full max-w-md mt-6">
+          <Link href="/events/ucp-taakra-2026">
+            <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 hover:shadow-lg transition-all cursor-pointer group">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Trophy className="h-24 w-24 text-blue-600" />
+              </div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                    Featured Event
+                  </span>
+                  <span className="text-slate-500 text-xs flex items-center gap-1">
+                    <Target className="h-3 w-3" /> UCP Lahore
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-blue-600 transition-colors">
+                  UCP Taakra 2026
+                </h3>
+                <p className="text-sm text-slate-600 mb-4">
+                  The biggest tech battle of the year. Speed Programming, CTF,
+                  Web Hackathon and more.
+                </p>
+                <div className="flex items-center text-sm font-medium text-blue-600 group-hover:underline">
+                  View Details <ArrowRight className="ml-1 h-4 w-4" />
+                </div>
+              </div>
+            </div>
+          </Link>
         </div>
         <div className="w-max">
           <Link href="/competitions">

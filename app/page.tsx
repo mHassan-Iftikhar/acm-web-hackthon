@@ -30,11 +30,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EmailBetaInput } from "@/components/landing/email-beta-input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import Footer from "@/components/layouts/footer";
-import { Suspense } from "react";
 import { UpcomingEvents } from "@/components/landing/upcoming-events";
 
 export default function LandingPage() {
@@ -160,43 +158,17 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="flex gap-4">
+          <div className="w-max">
             <Link href="/register">
-              <Button className="rounded-full px-8 text-base h-11">
-                Register Now
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button
+                variant="outline"
+                className="w-auto bg-transparent text-slate-900 font-bold pl-2 pr-1 py-6 text-sm rounded-full border border-slate-900 hover:border-blue-600 hover:bg-blue-600 hover:text-white transition-all cursor-pointer group"
+              >
+                <span className="px-4">Register Now</span>
+                <div className="p-2 h-10 w-10 rounded-full flex items-center justify-center bg-blue-600 group-hover:bg-white transition-colors">
+                  <ArrowRight className="text-white group-hover:text-blue-600 -rotate-45" />
+                </div>
               </Button>
-            </Link>
-          </div>
-
-          {/* UCP Taakra 2026 Card */}
-          <div className="w-full max-w-md mt-6">
-            <Link href="/events/ucp-taakra-2026">
-              <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 hover:shadow-lg transition-all cursor-pointer group">
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <Trophy className="h-24 w-24 text-blue-600" />
-                </div>
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                      Featured Event
-                    </span>
-                    <span className="text-slate-500 text-xs flex items-center gap-1">
-                      <Target className="h-3 w-3" /> UCP Lahore
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-blue-600 transition-colors">
-                    UCP Taakra 2026
-                  </h3>
-                  <p className="text-sm text-slate-600 mb-4">
-                    The biggest tech battle of the year. Speed Programming, CTF,
-                    Web Hackathon and more.
-                  </p>
-                  <div className="flex items-center text-sm font-medium text-blue-600 group-hover:underline">
-                    View Details <ArrowRight className="ml-1 h-4 w-4" />
-                  </div>
-                </div>
-              </div>
             </Link>
           </div>
 

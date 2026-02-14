@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { EmailBetaInput } from "@/components/landing/email-beta-input";
+import { Button } from "../ui/button";
+import { ArrowRight } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -18,7 +20,19 @@ export default function Footer() {
               Empowering the next generation of Pakistani students to discover,
               register, and compete at the highest level.
             </p>
-            <EmailBetaInput />
+            <div className="w-max">
+              <Link href="/register">
+                <Button
+                  variant="outline"
+                  className="w-auto bg-transparent text-slate-900 font-bold pl-2 pr-1 py-6 text-sm rounded-full border border-slate-900 hover:border-blue-600 hover:bg-blue-600 hover:text-white transition-all cursor-pointer group"
+                >
+                  <span className="px-4">Register Now</span>
+                  <div className="p-2 h-10 w-10 rounded-full flex items-center justify-center bg-blue-600 group-hover:bg-white transition-colors">
+                    <ArrowRight className="text-white group-hover:text-blue-600 -rotate-45" />
+                  </div>
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Right: Links */}
