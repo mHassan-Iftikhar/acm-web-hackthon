@@ -112,3 +112,42 @@ export async function* streamChat(
 export function isAIAvailable(): boolean {
   return !!process.env.GEMINI_API_KEY;
 }
+
+/**
+ * Non-streaming chat: collect stream into a single string (for controller use).
+ */
+export async function chat(
+  message: string,
+  conversationHistory: ChatMessage[] = [],
+  _context?: unknown
+): Promise<string> {
+  const messages: ChatMessage[] = [
+    ...conversationHistory.filter((m) => m.role === "user" || m.role === "assistant"),
+    { role: "user", content: message },
+  ];
+  let result = "";
+  for await (const chunk of streamChat(messages)) {
+    result += chunk;
+  }
+  return result;
+}
+
+const QUICK_ACTIONS = [
+  { label: "Trending now", prompt: "What competitions are trending right now?" },
+  { label: "Upcoming", prompt: "Which competitions are coming up soon?" },
+  { label: "By category", prompt: "What competition categories do you have?" },
+  { label: "How to register", prompt: "How do I register for a competition?" },
+];
+
+export function getQuickActions(): { label: string; prompt: string }[] {
+  return QUICK_ACTIONS;
+}
+
+export default {
+  chat,
+  getQuickActions,
+  getCompetitionContext,
+  getSystemPrompt,
+  streamChat,
+  isAIAvailable,
+};

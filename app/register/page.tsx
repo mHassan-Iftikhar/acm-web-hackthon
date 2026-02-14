@@ -68,6 +68,61 @@ const categoriesList = [
 const phoneRegex = /^\+92[0-9]{10}$/;
 const cnicRegex = /^[0-9]{5}-[0-9]{7}-[0-9]$/;
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+/** Compress image to JPEG base64 (max width 1200px, quality 0.75) to stay under Firestore 1MB. */
+function compressImageToBase64(file: File): Promise<{ base64: string; mimeType: string }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const maxW = 1200;
+      const w = img.width;
+      const h = img.height;
+      const scale = w > maxW ? maxW / w : 1;
+      const cw = Math.round(w * scale);
+      const ch = Math.round(h * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = cw;
+      canvas.height = ch;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Canvas not supported"));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, cw, ch);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.75);
+      const base64 = dataUrl.replace(/^data:image\/jpeg;base64,/, "");
+      resolve({ base64, mimeType: "image/jpeg" });
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Failed to load image"));
+    };
+    img.src = url;
+  });
+}
+
+/** Read file as base64. For images use compressImageToBase64 instead. */
+function fileToBase64(file: File): Promise<{ base64: string; mimeType: string }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      const base64 = result.split(",")[1];
+      const mime = file.type || "application/octet-stream";
+      if (!base64) {
+        reject(new Error("Failed to read file"));
+        return;
+      }
+      resolve({ base64, mimeType: mime });
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
 const formSchema = z.object({
   institutionName: z.string().min(2, "Institution name is required"),
   headDelegate: z.object({
@@ -93,7 +148,7 @@ const formSchema = z.object({
     .array(z.string())
     .min(1, "Select at least one category"),
   paymentMethod: z.enum(["bank_transfer", "bank_draft"]),
-  paymentProof: z.any().optional(), // File validation is tricky client-side without upload logic
+  paymentProof: z.any().refine((v) => v instanceof File, "Please upload payment proof"),
   agreements: z.object({
     rules: z.literal(true, {
       errorMap: () => ({ message: "You must agree to the rules" }),
@@ -126,6 +181,7 @@ export default function RegisterPage() {
       ],
       selectedCategories: [],
       paymentMethod: "bank_transfer",
+      paymentProof: undefined,
       agreements: {
         rules: undefined,
         idCard: undefined,
@@ -153,14 +209,63 @@ export default function RegisterPage() {
     setFee(3500 * categoryCount * participantCount);
   }, [watchedCategories, watchedParticipants]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // In a real app, upload file to storage, then POST data to API
-    toast.success("Registration Submitted Successfully!", {
-      description:
-        "We have received your application. Check your email for confirmation.",
-    });
-    form.reset();
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const file = values.paymentProof as File | undefined;
+    if (!file || !(file instanceof File)) {
+      toast.error("Please upload a payment proof image or PDF.");
+      return;
+    }
+
+    let paymentProofBase64: string;
+    let paymentProofMimeType: string;
+    try {
+      if (file.type.startsWith("image/")) {
+        const res = await compressImageToBase64(file);
+        paymentProofBase64 = res.base64;
+        paymentProofMimeType = res.mimeType;
+      } else {
+        const res = await fileToBase64(file);
+        paymentProofBase64 = res.base64;
+        paymentProofMimeType = res.mimeType;
+      }
+    } catch (e) {
+      toast.error("Failed to process file. Use an image or PDF under 5MB.");
+      return;
+    }
+
+    const payload = {
+      institutionName: values.institutionName,
+      headDelegate: values.headDelegate,
+      participants: values.participants,
+      selectedCategories: values.selectedCategories,
+      paymentMethod: values.paymentMethod,
+      paymentProofBase64,
+      paymentProofFileName: file.name,
+      paymentProofMimeType,
+      agreements: values.agreements,
+      totalFee: fee,
+    };
+
+    try {
+      const res = await fetch(`${API_URL}/api/registrations/taakra-2026`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        toast.error(data.message || "Failed to submit registration.");
+        return;
+      }
+      toast.success("Registration Submitted Successfully!", {
+        description:
+          "We have received your application. Check your email for confirmation.",
+      });
+      form.reset();
+    } catch (err) {
+      toast.error("Network error. Please try again.");
+    }
   }
 
   return (
@@ -186,7 +291,14 @@ export default function RegisterPage() {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(onSubmit, (errors) => {
+              toast.error("Please complete all required fields and upload payment proof.");
+              const firstError = Object.keys(errors)[0] as keyof z.infer<typeof formSchema> | undefined;
+              if (firstError) form.setFocus(firstError);
+            })}
+            className="space-y-8"
+          >
             {/* Institution Information */}
             <Card>
               <CardHeader>
@@ -518,7 +630,7 @@ export default function RegisterPage() {
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                           className="flex flex-col space-y-1"
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
@@ -544,29 +656,52 @@ export default function RegisterPage() {
                   )}
                 />
 
-                <div className="space-y-2">
-                  <Label htmlFor="proof">
-                    Upload Payment Proof <span className="text-red-500">*</span>
-                  </Label>
-                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-slate-50 transition-colors cursor-pointer">
-                    <Upload className="h-8 w-8 text-slate-400 mb-2" />
-                    <span className="text-sm text-slate-600 font-medium">
-                      Click to upload image or PDF
-                    </span>
-                    <span className="text-xs text-slate-400 mt-1">
-                      Max file size: 5MB
-                    </span>
-                    <Input
-                      id="proof"
-                      type="file"
-                      className="hidden"
-                      accept="image/*,.pdf"
-                      onChange={() => {
-                        // Handle file change if needed for preview
-                      }}
-                    />
-                  </div>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="paymentProof"
+                  render={({ field: { onChange, value, ref } }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Upload Payment Proof <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <label
+                          htmlFor="payment-proof-upload"
+                          className="flex flex-col items-center justify-center text-center border-2 border-dashed border-slate-300 rounded-lg p-6 hover:bg-slate-50 transition-colors cursor-pointer"
+                        >
+                          <Upload className="h-8 w-8 text-slate-400 mb-2 shrink-0" />
+                          <span className="text-sm text-slate-600 font-medium">
+                            {value?.name
+                              ? value.name
+                              : "Click to upload image or PDF"}
+                          </span>
+                          <span className="text-xs text-slate-400 mt-1">
+                            Max file size: 5MB
+                          </span>
+                          <Input
+                            id="payment-proof-upload"
+                            type="file"
+                            className="sr-only"
+                            accept="image/*,.pdf"
+                            ref={ref}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                if (file.size > 5 * 1024 * 1024) {
+                                  toast.error("File size must be under 5MB");
+                                  e.target.value = "";
+                                  return;
+                                }
+                                onChange(file);
+                              }
+                            }}
+                          />
+                        </label>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </CardContent>
             </Card>
 
@@ -617,9 +752,10 @@ export default function RegisterPage() {
             <Button
               type="submit"
               size="lg"
+              disabled={form.formState.isSubmitting}
               className="w-full font-bold text-lg h-12 bg-blue-600 hover:bg-blue-700"
             >
-              Submit Registration
+              {form.formState.isSubmitting ? "Submitting…" : "Submit Registration"}
             </Button>
           </form>
         </Form>

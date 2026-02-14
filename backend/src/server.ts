@@ -11,6 +11,8 @@ import chatRoutes from './features/chat/chat.routes.js';
 import aiRoutes from './features/ai/ai.routes.js';
 import competitionRoutes from './features/competitions/competition.routes.js';
 import analyticsRoutes from './features/analytics/analytics.routes.js';
+import taakraRegistrationRoutes from './features/registrations/taakra-registration.routes.js';
+import adminRoutes from './features/admin/users.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { initSocket } from './services/socket.service.js';
 
@@ -30,7 +32,7 @@ const httpServer = createServer(app);
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Database Connection
@@ -59,6 +61,12 @@ app.use('/api', competitionRoutes);
 
 // Analytics (admin/organizer)
 app.use('/api/analytics', analyticsRoutes);
+
+// Admin routes (user management)
+app.use('/api/admin', adminRoutes);
+
+// Taakra 2026 registration (writes to Firestore collection "re")
+app.use('/api/registrations', taakraRegistrationRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

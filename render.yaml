@@ -1,0 +1,12 @@
+# Render Blueprint – Backend only. Frontend deploy separately (e.g. Vercel).
+# Add env vars in Render Dashboard (MONGODB_URI, FIREBASE_*, GEMINI_API_KEY).
+services:
+  - type: web
+    name: taakra-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production

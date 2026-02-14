@@ -132,8 +132,8 @@ export const competitionController = {
           .json({ status: "error", message: "User not authenticated" });
       }
 
-      // Only organizer can update
-      if (competition.organizer.toString() !== req.user.id) {
+      // Allow organizer OR admin to update
+      if (competition.organizer.toString() !== req.user.id && req.user.role !== 'admin') {
         return res.status(403).json({
           status: "error",
           message: "You are not authorized to update this competition",
@@ -174,8 +174,8 @@ export const competitionController = {
           .json({ status: "error", message: "User not authenticated" });
       }
 
-      // Only organizer can delete
-      if (competition.organizer.toString() !== req.user.id) {
+      // Allow organizer OR admin to delete
+      if (competition.organizer.toString() !== req.user.id && req.user.role !== 'admin') {
         return res.status(403).json({
           status: "error",
           message: "You are not authorized to delete this competition",

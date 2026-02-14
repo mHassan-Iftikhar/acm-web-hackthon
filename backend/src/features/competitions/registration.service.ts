@@ -63,7 +63,15 @@ export const registrationService = {
   // Get user's registrations
   async getUserRegistrations(userId: string) {
     return Registration.find({ user: userId })
-      .populate("competition", "title startDate status category")
+      .populate({
+        path: 'competition',
+        // populate competition document and also populate nested refs like category and organizer
+        populate: [
+          { path: 'category' },
+          { path: 'organizer', select: 'displayName email' },
+          { path: 'coordinators', select: 'displayName email' },
+        ],
+      })
       .sort({ createdAt: -1 });
   },
 
