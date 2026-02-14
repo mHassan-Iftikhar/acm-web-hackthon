@@ -41,8 +41,14 @@ export default function AdminCompetitionsPage() {
   const loadCompetitions = async () => {
     try {
       setIsLoading(true);
-      const data = await competitionApi.getMyCompetitions(100, 1);
-      setCompetitions(data.data || []);
+      // Admin sees all competitions; organizer sees only their own
+      if (user?.role === 'admin') {
+        const data = await competitionApi.getCompetitions({ limit: 100, page: 1 });
+        setCompetitions(data?.data ?? []);
+      } else {
+        const data = await competitionApi.getMyCompetitions(100, 1);
+        setCompetitions(data?.data ?? []);
+      }
     } catch (error) {
       toast.error('Failed to load competitions');
     } finally {

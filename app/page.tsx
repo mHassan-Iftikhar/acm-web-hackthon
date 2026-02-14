@@ -34,6 +34,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import Footer from "@/components/layouts/footer";
 import { UpcomingEvents } from "@/components/landing/upcoming-events";
+import Image from "next/image";
 
 export default function LandingPage() {
   const { user, logout } = useAuth();
@@ -50,8 +51,9 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white text-slate-900 selection:bg-blue-100 selection:text-blue-900">
       <header className="sticky top-0 z-30 w-full border-b border-slate-200 bg-white/80 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="text-xl sm:text-2xl tracking-wide font-semibold text-slate-800 flex items-center font-orenza">
-            Taakra
+          <div className="text-xl sm:text-2xl tracking-wide font-semibold text-slate-800 flex items-center font-orenza gap-2">
+            <Image src="/taakra-2026-logo.webp" alt="UCP Logo" width={100} height={100} className="w-10 h-10" />
+              UCP Taakra
             <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 ml-0.5" />
           </div>
           <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">

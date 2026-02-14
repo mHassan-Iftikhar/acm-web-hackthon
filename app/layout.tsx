@@ -6,6 +6,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/auth-context";
 import { SocketProvider } from "@/context/socket-context";
 import { ChatWidget } from "@/components/chat/chat-widget";
+import { AIChatWidget } from "@/components/chat/ai-chat-widget";
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -69,6 +70,7 @@ export default function RootLayout({
           <SocketProvider>
             {children}
             <ChatWidget />
+            <AIChatWidget />
           </SocketProvider>
         </AuthProvider>
       </body>

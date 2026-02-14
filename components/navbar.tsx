@@ -46,8 +46,20 @@ export function Navbar() {
             >
               Browse
             </a>
+            <a
+              href="/discover"
+              className="text-slate-600 hover:text-slate-900 font-medium transition"
+            >
+              Discover
+            </a>
             {user && (user.role === "organizer" || user.role === "admin") && (
               <>
+                <a
+                  href="/admin"
+                  className="text-slate-600 hover:text-slate-900 font-medium transition"
+                >
+                  Admin
+                </a>
                 <a
                   href="/admin/competitions"
                   className="text-slate-600 hover:text-slate-900 font-medium transition"
@@ -59,6 +71,12 @@ export function Navbar() {
                   className="text-slate-600 hover:text-slate-900 font-medium transition"
                 >
                   Registrations
+                </a>
+                <a
+                  href="/admin/analytics"
+                  className="text-slate-600 hover:text-slate-900 font-medium transition"
+                >
+                  Analytics
                 </a>
                 <a
                   href="/admin/support"
