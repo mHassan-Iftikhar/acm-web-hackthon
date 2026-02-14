@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 "use client";
 
 import Link from "next/link";
@@ -138,48 +137,12 @@ export default function LandingPage() {
                     Sign Up
                   </Button>
                 </Link>
-=======
-'use client';
-
-import Link from 'next/link';
-import { useAuth } from '@/hooks/use-auth';
-import { Button } from '@/components/ui/button';
-import { Trophy, Calendar, Users, ArrowRight } from 'lucide-react';
-
-export default function LandingPage() {
-  const { user, loading } = useAuth();
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      {/* Simple top bar */}
-      <header className="border-b border-slate-200/80 bg-white/70 backdrop-blur">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <span className="text-2xl font-bold text-blue-600">Taakra</span>
-          <div className="flex items-center gap-3">
-            {!loading && (
-              <>
-                {user ? (
-                  <Link href="/dashboard">
-                    <Button>Dashboard</Button>
-                  </Link>
-                ) : (
-                  <>
-                    <Link href="/login">
-                      <Button variant="ghost">Log in</Button>
-                    </Link>
-                    <Link href="/signup">
-                      <Button>Sign up</Button>
-                    </Link>
-                  </>
-                )}
->>>>>>> Stashed changes
               </>
             )}
           </div>
         </div>
       </header>
 
-<<<<<<< Updated upstream
       <section className="mx-auto grid w-full max-w-6xl gap-10 px-5 pb-16 pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="space-y-8">
           <div className="flex w-fit items-center gap-2 rounded-full border border-slate-300/60 bg-white/70 px-4 py-2 text-xs font-normal text-slate-600 font-outfit uppercase tracking-wider">
@@ -399,64 +362,6 @@ export default function LandingPage() {
       </section>
 
       <Footer />
-=======
-      {/* Hero */}
-      <main className="container mx-auto px-4 py-16 md:py-24">
-        <div className="max-w-3xl mx-auto text-center space-y-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight">
-            Discover & register for competitions
-          </h1>
-          <p className="text-lg md:text-xl text-slate-600 max-w-xl mx-auto">
-            Taakra helps you find trending competitions, manage registrations, and stay updated—all in one place.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link href="/competitions">
-              <Button size="lg" className="gap-2">
-                Browse competitions
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/discover">
-              <Button size="lg" variant="outline">
-                Discover trending
-              </Button>
-            </Link>
-            {!user && (
-              <Link href="/signup">
-                <Button size="lg" variant="secondary">
-                  Create account
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {/* Features */}
-        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          <div className="flex flex-col items-center text-center p-6 rounded-xl bg-white/60 border border-slate-200/80 shadow-sm">
-            <div className="p-3 rounded-full bg-blue-100 text-blue-600 mb-4">
-              <Trophy className="h-6 w-6" />
-            </div>
-            <h2 className="font-semibold text-slate-900 mb-2">Competitions</h2>
-            <p className="text-sm text-slate-600">Browse and filter by category, date, and status.</p>
-          </div>
-          <div className="flex flex-col items-center text-center p-6 rounded-xl bg-white/60 border border-slate-200/80 shadow-sm">
-            <div className="p-3 rounded-full bg-green-100 text-green-600 mb-4">
-              <Calendar className="h-6 w-6" />
-            </div>
-            <h2 className="font-semibold text-slate-900 mb-2">Calendar & agenda</h2>
-            <p className="text-sm text-slate-600">View upcoming events and plan ahead.</p>
-          </div>
-          <div className="flex flex-col items-center text-center p-6 rounded-xl bg-white/60 border border-slate-200/80 shadow-sm">
-            <div className="p-3 rounded-full bg-purple-100 text-purple-600 mb-4">
-              <Users className="h-6 w-6" />
-            </div>
-            <h2 className="font-semibold text-slate-900 mb-2">Your registrations</h2>
-            <p className="text-sm text-slate-600">Track applications and approvals in your dashboard.</p>
-          </div>
-        </div>
-      </main>
->>>>>>> Stashed changes
     </div>
   );
 }

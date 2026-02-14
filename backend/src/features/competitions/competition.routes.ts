@@ -5,6 +5,7 @@ import {
   categoryController,
 } from "./competition.controller.js";
 import { registrationController } from "./registration.controller.js";
+import discoveryController from "./discovery.controller.js";
 
 const router = express.Router();
 

@@ -97,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.error("Failed to sync user with backend");
           }
           setError(null);
+          }
         } catch (err) {
           console.error('Auth state change error:', err);
           setError('Failed to load user');
@@ -104,13 +105,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setLoading(false);
         }
         setError(null);
-      } catch (err) {
-        console.error("Auth state change error:", err);
-        setError("Failed to load user");
-      } finally {
-        setLoading(false);
-      }
-    });
+      });
+    } catch (err) {
+      console.error("Auth state change error:", err);
+      setError("Failed to load user");
+    } finally {
+      setLoading(false);
+    }
 
     return () => unsubscribe?.();
   }, []);
