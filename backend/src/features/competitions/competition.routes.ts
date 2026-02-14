@@ -58,6 +58,14 @@ router.post(
   registrationController.withdraw,
 );
 
+// Discovery Routes
+router.get("/competitions/discover/trending", discoveryController.getTrending);
+router.get("/competitions/discover/popular", discoveryController.getPopular);
+router.get("/competitions/discover/new", discoveryController.getNew);
+router.get("/competitions/discover/upcoming", discoveryController.getUpcoming);
+router.get("/competitions/discover/calendar", discoveryController.getCalendar);
+router.get("/competitions/discover/agenda", discoveryController.getAgenda);
+
 // Category Routes
 router.post("/categories", verifyAuth, categoryController.create); // Admin only
 router.get("/categories", categoryController.getAll);

@@ -37,21 +37,37 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function getAuthErrorMessage(err: unknown): string {
+  const code = err && typeof err === 'object' && 'code' in err
+    ? (err as { code?: string }).code
+    : undefined;
+  if (code === 'auth/configuration-not-found') {
+    return 'Authentication is not set up. Enable it in Firebase Console → Authentication → Sign-in method.';
+  }
+  if (code === 'auth/invalid-api-key' || code === 'auth/operation-not-allowed') {
+    return 'Auth is not configured correctly. Check Firebase Console settings.';
+  }
+  return err && typeof err === 'object' && 'message' in err
+    ? String((err as { message: unknown }).message)
+    : 'Something went wrong';
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Listen for auth state changes
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      try {
-        if (firebaseUser) {
-          setUser({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName: firebaseUser.displayName,
-          });
+    let unsubscribe: (() => void) | undefined;
+    try {
+      unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        try {
+          if (firebaseUser) {
+            setUser({
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName,
+            });
 
           // Call backend to create/update user
           const idToken = await firebaseUser.getIdToken();
@@ -80,8 +96,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } else {
             console.error("Failed to sync user with backend");
           }
-        } else {
-          setUser(null);
+          setError(null);
+        } catch (err) {
+          console.error('Auth state change error:', err);
+          setError('Failed to load user');
+        } finally {
+          setLoading(false);
         }
         setError(null);
       } catch (err) {
@@ -92,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe?.();
   }, []);
 
   const loginWithEmail = async (

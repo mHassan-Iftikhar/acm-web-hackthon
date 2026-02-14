@@ -1,6 +1,6 @@
 import express from 'express';
-import authController from './auth.controller';
-import { verifyFirebaseToken } from '../../middleware/auth';
+import authController from './auth.controller.js';
+import { verifyFirebaseToken } from '../../middleware/auth.js';
 
 const router = express.Router();
 
